@@ -62,11 +62,17 @@ from tkinter import *
 2. **Password Generation Logic**
 ```
 def generate_password():
-    length = int(length_input.get())  # Get the desired password length
+    try:
+        length = int(length_input.get())  # Get the desired password length
+    except ValueError:
+        result_display.delete(0, END)
+        result_display.insert(0, "Invalid length!")  # Show error if length is not a number
+        return
+
     include_uppercase = uppercase_var.get()  # Check if uppercase is selected
     include_lowercase = lowercase_var.get()  # Check if lowercase is selected
-    include_numbers = numbers_var.get()      # Check if numbers are selected
-    include_symbols = symbols_var.get()      # Check if symbols are selected
+    include_numbers = numbers_var.get()  # Check if numbers are selected
+    include_symbols = symbols_var.get()  # Check if symbols are selected
 
     # Build the character pool based on selected options
     char_pool = ''
@@ -81,12 +87,16 @@ def generate_password():
 
     # Ensure at least one character type is selected
     if not char_pool:
-        result_label.config(text="Please select at least one character type!")
+        result_display.delete(0, END)
+        result_display.insert(0, "Select at least one option!")  # Show error if no options are selected
         return
 
     # Generate the password by randomly picking characters from the pool
     password = ''.join(random.choice(char_pool) for _ in range(length))
-    result_label.config(text=password)  # Display the generated password
+
+    # Display the generated password
+    result_display.delete(0, END)  # Clear the previous result
+    result_display.insert(0, password)  # Insert the new password
 ```
 
 ---
@@ -118,10 +128,10 @@ Checkbutton(root, text="Symbols", variable=symbols_var).pack(anchor=W)
 # Generate button
 Button(root, text="Generate Password", command=generate_password, bg="lightblue").pack(pady=10)
 
-# Output display
+# Output display (copyable)
 Label(root, text="Generated Password:", font=("Helvetica", 10)).pack(pady=5)
-result_label = Label(root, text="", font=("Helvetica", 12), wraplength=300, fg="green")
-result_label.pack(pady=5)
+result_display = Entry(root, font=("Helvetica", 12), fg="green", width=40)
+result_display.pack(pady=5)
 
 # Run the application
 root.mainloop()
